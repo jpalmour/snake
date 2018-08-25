@@ -1,17 +1,20 @@
-package snake
+package game
 
 import (
 	"fmt"
 	"math/rand"
 	"strings"
 	"time"
+
+	"github.com/jpalmour/snake/go/cell"
+	"github.com/jpalmour/snake/go/snake"
 )
 
 // Game represents the game of snake.
 type Game struct {
 	size, speed, score, turns int
-	snake                     *snake
-	food                      cell
+	snake                     *snake.Snake
+	food                      cell.Cell
 }
 
 // New returns a Game with a size by size grid with speed milliseconds per turn.
@@ -21,8 +24,8 @@ func New(size, speed int) *Game {
 		speed: speed,
 		turns: 0,
 		score: 0,
+		snake: snake.New(size),
 	}
-	g.populateSnake()
 	g.populateFood()
 	return g
 }
@@ -34,7 +37,7 @@ func (g *Game) Play() {
 		clearTerminal()
 		g.paintScoreboard()
 		g.paintGrid()
-		if g.snake.move(getDirection(), g.food) {
+		if g.snake.Move(getDirection(), g.food) {
 			g.populateFood()
 			g.score++
 		}
@@ -43,28 +46,19 @@ func (g *Game) Play() {
 	fmt.Println()
 }
 
-func (g *Game) populateSnake() {
-	g.snake = &snake{
-		cellList:  []cell{},
-		cellSet:   map[cell]bool{},
-		direction: up,
-	}
-	g.snake.addHead(cell{g.size / 2, g.size / 2})
-}
-
 func (g *Game) populateFood() {
-	food := cell{rand.Intn(g.size), rand.Intn(g.size)}
-	for g.snake.bodyCollision(food) {
-		food = cell{rand.Intn(g.size), rand.Intn(g.size)}
+	food := cell.Cell{rand.Intn(g.size), rand.Intn(g.size)}
+	for g.snake.BodyCollision(food) {
+		food = cell.Cell{rand.Intn(g.size), rand.Intn(g.size)}
 	}
 	g.food = food
 }
 
 func (g *Game) finished() bool {
-	if g.snake.head().x < 0 || g.snake.head().y < 0 || g.snake.head().x >= g.size || g.snake.head().y >= g.size {
+	if g.snake.Head().X < 0 || g.snake.Head().Y < 0 || g.snake.Head().X >= g.size || g.snake.Head().Y >= g.size {
 		return true
 	}
-	if g.snake.headCollision() {
+	if g.snake.HeadCollision() {
 		return true
 	}
 	return false
@@ -75,7 +69,7 @@ func getDirection() int {
 	//consoleReader := bufio.NewReaderSize(os.Stdin, 1)
 	//asci, _ := consoleReader.ReadByte()
 	//fmt.Println(asci)
-	directions := []int{up, down, left, right, none, none, none}
+	directions := []int{cell.Up, cell.Down, cell.Left, cell.Right, cell.None, cell.None, cell.None}
 	return directions[rand.Intn(len(directions))]
 	// k up 107
 	// j down 106
@@ -84,8 +78,9 @@ func getDirection() int {
 }
 
 func (g *Game) paintCell(r, c int) {
-	cu := cell{r, c}
-	if g.snake.cellSet[cu] {
+	cu := cell.Cell{r, c}
+	// TODO: game shouldn't paint snake, snake should (CellSet shouldn't be exported?)
+	if g.snake.CellSet[cu] {
 		fmt.Print("@")
 	} else if cu == g.food {
 		fmt.Print("#")
