@@ -1,103 +1,86 @@
 package snake
 
-import (
-	"fmt"
-	"math/rand"
-	"strings"
-	"time"
-)
+import "math/rand"
 
 const (
 	up = iota
 	down
 	left
 	right
+	none
 )
-
-// Game represents the game of snake.
-type Game struct {
-	size, speed, score, turns, direction int
-	snake                                *snake
-	food                                 cell
-}
-
-// snake represents the snake that the player controls.
-type snake struct {
-	cellList []cell
-	cellSet  map[cell]bool
-}
-
-func (g *Game) populateSnake() {
-	g.snake = &snake{
-		cellList: []cell{},
-		cellSet:  map[cell]bool{},
-	}
-	g.snake.addHead(cell{g.size / 2, g.size / 2})
-}
 
 // cell represents a location in Game's grid.
 type cell struct {
 	x, y int
 }
 
-// New returns a Game with a size by size grid with speed milliseconds per turn.
-func New(size, speed int) *Game {
-	g := &Game{
-		size:      size,
-		speed:     speed,
-		turns:     0,
-		score:     0,
-		direction: right,
-	}
-	g.populateSnake()
-	g.generateFood()
-	return g
+// snake represents the snake that the player controls.
+type snake struct {
+	cellList  []cell
+	cellSet   map[cell]bool
+	direction int
 }
 
-// Play starts the game.
-func (g *Game) Play() {
-	for !g.finished() {
-		g.turns++
-		clearTerminal()
-		g.paintScoreboard()
-		g.paintGrid()
-		g.updateSnake()
-		time.Sleep(time.Duration(g.speed) * time.Millisecond)
-	}
-	fmt.Println()
+func (s *snake) bodyCollision(c cell) bool {
+	return contains(s.cellList[0:], c)
+
 }
 
-func (g *Game) finished() bool {
+func (s *snake) headCollision() bool {
+	return contains(s.cellList[1:], s.head())
+}
+
+func contains(l []cell, c cell) bool {
+	for _, ci := range l {
+		if c == ci {
+			return true
+		}
+	}
 	return false
-}
-
-func (g *Game) updateSnake() {
-	g.direction = getDirection()
-	// TODO: fix law of demeter violation
-	if g.snake.move(g.direction, g.food) {
-		g.score++
-	}
-
 }
 
 func (s *snake) head() cell {
 	return s.cellList[0]
 }
 
-func (s *snake) move(d int, foodLoc cell) bool {
-	newHead := cell{s.head().x - 1, s.head().y}
-	if d == up {
-		newHead = cell{s.head().x, s.head().y - 1}
-	} else if d == down {
-		newHead = cell{s.head().x, s.head().y + 1}
-	} else if d == right {
-		newHead = cell{s.head().x + 1, s.head().y}
+func opposite(d1, d2 int) bool {
+	type pair struct {
+		a, b int
 	}
-	eatsFood := foodLoc == newHead
+	ds := pair{d1, d2}
+	return ds == pair{up, down} || ds == pair{down, up} || ds == pair{left, right} || ds == pair{right, left}
+}
+
+func (s *snake) getDirection(d int) int {
+	if d == none || opposite(d, s.direction) {
+		return s.direction
+	}
+	return d
+}
+
+func (s *snake) getNewHead(d int) cell {
+	switch d {
+	case down:
+		return cell{s.head().x, s.head().y + 1}
+	case left:
+		return cell{s.head().x - 1, s.head().y}
+	case right:
+		return cell{s.head().x + 1, s.head().y}
+	}
+	return cell{s.head().x, s.head().y - 1}
+}
+
+func (s *snake) move(d int, food cell) bool {
+	d = s.getDirection(d)
+	head := s.getNewHead(d)
+	eatsFood := food == head
+	// TODO: remove following line
+	eatsFood = rand.Intn(2) > 0
 	if !eatsFood {
 		s.removeTailTip()
 	}
-	s.addHead(newHead)
+	s.addHead(head)
 	return eatsFood
 }
 
@@ -110,57 +93,4 @@ func (s *snake) removeTailTip() {
 func (s *snake) addHead(h cell) {
 	s.cellList = append([]cell{h}, s.cellList...)
 	s.cellSet[h] = true
-}
-
-func getDirection() int {
-	// TODO: get direction from keypress
-	return right
-}
-
-func (g *Game) paintCell(r, c int) {
-	cu := cell{r, c}
-	if g.snake.cellSet[cu] {
-		fmt.Print("@")
-	} else if cu == g.food {
-		fmt.Print("#")
-	} else {
-		fmt.Print(" ")
-	}
-}
-
-func (g *Game) paintScoreboard() {
-	fmt.Printf("Snake (written in Go)\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.score, g.speed, g.turns)
-}
-
-func (g *Game) paintGrid() {
-	g.paintBorder()
-	for r := 0; r < g.size; r++ {
-		g.paintRow(r)
-	}
-	g.paintBorder()
-}
-
-func (g *Game) paintRow(r int) {
-	fmt.Print("|")
-	for c := 0; c < g.size; c++ {
-		g.paintCell(r, c)
-	}
-	fmt.Println("|")
-}
-
-func (g *Game) paintBorder() {
-	fmt.Printf("*%s*\n", strings.Repeat("-", g.size))
-}
-
-func (g *Game) generateFood() {
-	// TODO: don't use a valid cell for detecting missing food
-	c := cell{0, 0}
-	if g.food == c {
-		// TODO: ensure food not on snake
-		g.food = cell{rand.Intn(g.size), rand.Intn(g.size)}
-	}
-}
-
-func clearTerminal() {
-	print("\033[H\033[2J")
 }
