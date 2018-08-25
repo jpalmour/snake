@@ -32,6 +32,23 @@ func (s *Snake) HeadCollision() bool {
 	return contains(s.cellList[1:], s.Head())
 }
 
+func (s *Snake) Head() cell.Cell {
+	return s.cellList[0]
+}
+
+func (s *Snake) Move(d int, food cell.Cell) bool {
+	d = s.getDirection(d)
+	head := s.getNewHead(d)
+	eatsFood := food == head
+	// TODO: remove following line
+	eatsFood = rand.Intn(2) > 0
+	if !eatsFood {
+		s.removeTailTip()
+	}
+	s.addHead(head)
+	return eatsFood
+}
+
 func contains(l []cell.Cell, c cell.Cell) bool {
 	for _, ci := range l {
 		if c == ci {
@@ -39,10 +56,6 @@ func contains(l []cell.Cell, c cell.Cell) bool {
 		}
 	}
 	return false
-}
-
-func (s *Snake) Head() cell.Cell {
-	return s.cellList[0]
 }
 
 func opposite(d1, d2 int) bool {
@@ -70,19 +83,6 @@ func (s *Snake) getNewHead(d int) cell.Cell {
 		return cell.Cell{s.Head().X + 1, s.Head().Y}
 	}
 	return cell.Cell{s.Head().X, s.Head().Y - 1}
-}
-
-func (s *Snake) Move(d int, food cell.Cell) bool {
-	d = s.getDirection(d)
-	head := s.getNewHead(d)
-	eatsFood := food == head
-	// TODO: remove following line
-	eatsFood = rand.Intn(2) > 0
-	if !eatsFood {
-		s.removeTailTip()
-	}
-	s.addHead(head)
-	return eatsFood
 }
 
 func (s *Snake) removeTailTip() {
