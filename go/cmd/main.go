@@ -8,6 +8,6 @@ import (
 func main() {
 	c := terminal.NewController()
 	d := terminal.NewDisplay()
-	g := game.New(35, 250, c, d)
+	g := game.New(35, 100, c, d)
 	g.Play()
 }

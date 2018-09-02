@@ -21,15 +21,15 @@ func (d *Display) Paint(g *snakeapp.Game) {
 }
 
 func (d *Display) paintScoreboard(g *snakeapp.Game) {
-	fmt.Printf("Snake (written in Go)\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.Score, g.Speed, g.Turns)
+	fmt.Printf("Snake\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.Score, g.Speed, g.Turns)
 }
 
 func (d *Display) paintGrid(g *snakeapp.Game) {
-	d.paintBorder(g)
+	d.paintBorder(g.Size)
 	for r := 0; r < g.Size; r++ {
 		d.paintRow(r, g)
 	}
-	d.paintBorder(g)
+	d.paintBorder(g.Size)
 }
 
 func (d *Display) paintCell(r, c int, g *snakeapp.Game) {
@@ -46,13 +46,13 @@ func (d *Display) paintCell(r, c int, g *snakeapp.Game) {
 func (d *Display) paintRow(r int, g *snakeapp.Game) {
 	fmt.Print("|")
 	for c := 0; c < g.Size; c++ {
-		d.paintCell(r, c, g)
+		d.paintCell(c, r, g)
 	}
 	fmt.Println("|")
 }
 
-func (d *Display) paintBorder(g *snakeapp.Game) {
-	fmt.Printf("*%s*\n", strings.Repeat("-", g.Size))
+func (d *Display) paintBorder(s int) {
+	fmt.Printf("*%s*\n", strings.Repeat("-", s))
 }
 
 func clearTerminal() {

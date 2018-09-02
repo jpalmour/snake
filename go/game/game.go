@@ -29,8 +29,6 @@ func New(size, speed int, c snakeapp.Controller, d snakeapp.Display) *Game {
 func (g *Game) Play() {
 	for !g.finished() {
 		g.Turns++
-		fmt.Println("turns:", g.Turns)
-		fmt.Println("game:", g.Game)
 		g.Display.Paint(&g.Game)
 		if g.Snake.Move(g.Food) {
 			g.populateFood()

@@ -40,8 +40,8 @@ func (s *Snake) Head() snakeapp.Cell {
 }
 
 func (s *Snake) Move(food snakeapp.Cell) bool {
-	d := s.getDirection()
-	head := s.getNewHead(d)
+	s.direction = s.getDirection()
+	head := s.getNewHead(s.direction)
 	eatsFood := food == head
 	if !eatsFood {
 		s.removeTailTip()
@@ -69,7 +69,7 @@ func opposite(d1, d2 int) bool {
 
 func (s *Snake) getDirection() int {
 	d := s.controller.GetDirection()
-	if d == snakeapp.None || opposite(d, s.direction) {
+	if opposite(d, s.direction) {
 		return s.direction
 	}
 	return d
@@ -77,6 +77,8 @@ func (s *Snake) getDirection() int {
 
 func (s *Snake) getNewHead(d int) snakeapp.Cell {
 	switch d {
+	case snakeapp.Up:
+		return snakeapp.Cell{s.Head().X, s.Head().Y - 1}
 	case snakeapp.Down:
 		return snakeapp.Cell{s.Head().X, s.Head().Y + 1}
 	case snakeapp.Left:
@@ -84,7 +86,7 @@ func (s *Snake) getNewHead(d int) snakeapp.Cell {
 	case snakeapp.Right:
 		return snakeapp.Cell{s.Head().X + 1, s.Head().Y}
 	}
-	return snakeapp.Cell{s.Head().X, s.Head().Y - 1}
+	return snakeapp.Cell{s.Head().X + 1, s.Head().Y}
 }
 
 func (s *Snake) removeTailTip() {

@@ -34,5 +34,4 @@ const (
 	Down
 	Left
 	Right
-	None
 )
