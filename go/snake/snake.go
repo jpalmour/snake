@@ -1,30 +1,29 @@
 package snake
 
 import (
-	"math/rand"
-
-	"github.com/jpalmour/snake/go/cell"
+	"github.com/jpalmour/snake/go"
 )
 
 // Snake represents the snake that the player controls.
 type Snake struct {
-	cellList  []cell.Cell
-	CellSet   map[cell.Cell]bool
-	direction int
+	cellList   []snakeapp.Cell
+	CellSet    map[snakeapp.Cell]bool
+	direction  int
+	controller snakeapp.Controller
 }
 
-func New(boardSize int) *Snake {
+func New(boardSize int, c snakeapp.Controller) *Snake {
 	s := &Snake{
-		cellList:  []cell.Cell{},
-		CellSet:   map[cell.Cell]bool{},
-		direction: cell.Up,
+		cellList:   []snakeapp.Cell{},
+		CellSet:    map[snakeapp.Cell]bool{},
+		direction:  snakeapp.Up,
+		controller: c,
 	}
-	// TODO: should addHead be exported?
-	s.addHead(cell.Cell{boardSize / 2, boardSize / 2})
+	s.addHead(snakeapp.Cell{boardSize / 2, boardSize / 2})
 	return s
 }
 
-func (s *Snake) BodyCollision(c cell.Cell) bool {
+func (s *Snake) BodyCollision(c snakeapp.Cell) bool {
 	return contains(s.cellList[0:], c)
 }
 
@@ -32,16 +31,14 @@ func (s *Snake) HeadCollision() bool {
 	return contains(s.cellList[1:], s.Head())
 }
 
-func (s *Snake) Head() cell.Cell {
+func (s *Snake) Head() snakeapp.Cell {
 	return s.cellList[0]
 }
 
-func (s *Snake) Move(d int, food cell.Cell) bool {
-	d = s.getDirection(d)
+func (s *Snake) Move(food snakeapp.Cell) bool {
+	d := s.getDirection()
 	head := s.getNewHead(d)
 	eatsFood := food == head
-	// TODO: remove following line
-	eatsFood = rand.Intn(2) > 0
 	if !eatsFood {
 		s.removeTailTip()
 	}
@@ -49,7 +46,7 @@ func (s *Snake) Move(d int, food cell.Cell) bool {
 	return eatsFood
 }
 
-func contains(l []cell.Cell, c cell.Cell) bool {
+func contains(l []snakeapp.Cell, c snakeapp.Cell) bool {
 	for _, ci := range l {
 		if c == ci {
 			return true
@@ -63,26 +60,27 @@ func opposite(d1, d2 int) bool {
 		a, b int
 	}
 	ds := pair{d1, d2}
-	return ds == pair{cell.Up, cell.Down} || ds == pair{cell.Down, cell.Up} || ds == pair{cell.Left, cell.Right} || ds == pair{cell.Right, cell.Left}
+	return ds == pair{snakeapp.Up, snakeapp.Down} || ds == pair{snakeapp.Down, snakeapp.Up} || ds == pair{snakeapp.Left, snakeapp.Right} || ds == pair{snakeapp.Right, snakeapp.Left}
 }
 
-func (s *Snake) getDirection(d int) int {
-	if d == cell.None || opposite(d, s.direction) {
+func (s *Snake) getDirection() int {
+	d := s.controller.GetDirection()
+	if d == snakeapp.None || opposite(d, s.direction) {
 		return s.direction
 	}
 	return d
 }
 
-func (s *Snake) getNewHead(d int) cell.Cell {
+func (s *Snake) getNewHead(d int) snakeapp.Cell {
 	switch d {
-	case cell.Down:
-		return cell.Cell{s.Head().X, s.Head().Y + 1}
-	case cell.Left:
-		return cell.Cell{s.Head().X - 1, s.Head().Y}
-	case cell.Right:
-		return cell.Cell{s.Head().X + 1, s.Head().Y}
+	case snakeapp.Down:
+		return snakeapp.Cell{s.Head().X, s.Head().Y + 1}
+	case snakeapp.Left:
+		return snakeapp.Cell{s.Head().X - 1, s.Head().Y}
+	case snakeapp.Right:
+		return snakeapp.Cell{s.Head().X + 1, s.Head().Y}
 	}
-	return cell.Cell{s.Head().X, s.Head().Y - 1}
+	return snakeapp.Cell{s.Head().X, s.Head().Y - 1}
 }
 
 func (s *Snake) removeTailTip() {
@@ -91,7 +89,7 @@ func (s *Snake) removeTailTip() {
 	delete(s.CellSet, tip)
 }
 
-func (s *Snake) addHead(h cell.Cell) {
-	s.cellList = append([]cell.Cell{h}, s.cellList...)
+func (s *Snake) addHead(h snakeapp.Cell) {
+	s.cellList = append([]snakeapp.Cell{h}, s.cellList...)
 	s.CellSet[h] = true
 }

@@ -3,29 +3,22 @@ package game
 import (
 	"fmt"
 	"math/rand"
-	"strings"
 	"time"
 
-	"github.com/jpalmour/snake/go/cell"
+	"github.com/jpalmour/snake/go"
 	"github.com/jpalmour/snake/go/snake"
 )
 
-// Game represents the game of snake.
-type Game struct {
-	size, speed, score, turns int
-	snake                     *snake.Snake
-	food                      cell.Cell
-}
-
-// New returns a Game with a size by size grid with speed milliseconds per turn.
-func New(size, speed int) *Game {
+// New returns a Game with a Size by Size grid with Speed milliseconds per turn.
+func New(size, speed int, c snakeapp.Controller, d snakeapp.Display) *Game {
 	g := &Game{
-		size:  size,
-		speed: speed,
-		turns: 0,
-		score: 0,
-		snake: snake.New(size),
+		Size:  size,
+		Speed: speed,
+		Turns: 0,
+		Score: 0,
+		Snake: snake.New(size, c),
 	}
+
 	g.populateFood()
 	return g
 }
@@ -33,86 +26,31 @@ func New(size, speed int) *Game {
 // Play starts the game.
 func (g *Game) Play() {
 	for !g.finished() {
-		g.turns++
-		clearTerminal()
-		g.paintScoreboard()
-		g.paintGrid()
-		if g.snake.Move(getDirection(), g.food) {
+		g.Turns++
+		g.Display.Paint(&g)
+		if g.Snake.Move(g.Food) {
 			g.populateFood()
-			g.score++
+			g.Score++
 		}
-		time.Sleep(time.Duration(g.speed) * time.Millisecond)
+		time.Sleep(time.Duration(g.Speed) * time.Millisecond)
 	}
 	fmt.Println()
 }
 
 func (g *Game) populateFood() {
-	food := cell.Cell{rand.Intn(g.size), rand.Intn(g.size)}
-	for g.snake.BodyCollision(food) {
-		food = cell.Cell{rand.Intn(g.size), rand.Intn(g.size)}
+	food := snakeapp.Cell{rand.Intn(g.Size), rand.Intn(g.Size)}
+	for g.Snake.BodyCollision(food) {
+		food = snakeapp.Cell{rand.Intn(g.Size), rand.Intn(g.Size)}
 	}
-	g.food = food
+	g.Food = food
 }
 
 func (g *Game) finished() bool {
-	if g.snake.Head().X < 0 || g.snake.Head().Y < 0 || g.snake.Head().X >= g.size || g.snake.Head().Y >= g.size {
+	if g.Snake.Head().X < 0 || g.Snake.Head().Y < 0 || g.Snake.Head().X >= g.Size || g.Snake.Head().Y >= g.Size {
 		return true
 	}
-	if g.snake.HeadCollision() {
+	if g.Snake.HeadCollision() {
 		return true
 	}
 	return false
-}
-
-func getDirection() int {
-	// TODO: get direction from keypress
-	//consoleReader := bufio.NewReaderSize(os.Stdin, 1)
-	//asci, _ := consoleReader.ReadByte()
-	//fmt.Println(asci)
-	directions := []int{cell.Up, cell.Down, cell.Left, cell.Right, cell.None, cell.None, cell.None}
-	return directions[rand.Intn(len(directions))]
-	// k up 107
-	// j down 106
-	// l right 108
-	// h left 104
-}
-
-func (g *Game) paintCell(r, c int) {
-	cu := cell.Cell{r, c}
-	// TODO: game shouldn't paint snake, snake should (CellSet shouldn't be exported?)
-	if g.snake.CellSet[cu] {
-		fmt.Print("@")
-	} else if cu == g.food {
-		fmt.Print("#")
-	} else {
-		fmt.Print(" ")
-	}
-}
-
-func (g *Game) paintScoreboard() {
-	fmt.Printf("Snake (written in Go)\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.score, g.speed, g.turns)
-}
-
-func (g *Game) paintGrid() {
-	g.paintBorder()
-	for r := 0; r < g.size; r++ {
-		g.paintRow(r)
-	}
-	g.paintBorder()
-}
-
-func (g *Game) paintRow(r int) {
-	fmt.Print("|")
-	for c := 0; c < g.size; c++ {
-		g.paintCell(r, c)
-	}
-	fmt.Println("|")
-}
-
-func (g *Game) paintBorder() {
-	fmt.Printf("*%s*\n", strings.Repeat("-", g.size))
-}
-
-func clearTerminal() {
-	print("\033[H\033[2J")
 }
