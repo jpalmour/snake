@@ -9,16 +9,19 @@ import (
 	"github.com/jpalmour/snake/go/snake"
 )
 
+type Game struct {
+	snakeapp.Game
+}
+
 // New returns a Game with a Size by Size grid with Speed milliseconds per turn.
 func New(size, speed int, c snakeapp.Controller, d snakeapp.Display) *Game {
-	g := &Game{
+	g := &Game{snakeapp.Game{
 		Size:  size,
 		Speed: speed,
 		Turns: 0,
 		Score: 0,
 		Snake: snake.New(size, c),
-	}
-
+	}}
 	g.populateFood()
 	return g
 }
@@ -27,7 +30,7 @@ func New(size, speed int, c snakeapp.Controller, d snakeapp.Display) *Game {
 func (g *Game) Play() {
 	for !g.finished() {
 		g.Turns++
-		g.Display.Paint(&g)
+		g.Display.Paint(&g.Game)
 		if g.Snake.Move(g.Food) {
 			g.populateFood()
 			g.Score++

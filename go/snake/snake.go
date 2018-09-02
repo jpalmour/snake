@@ -7,7 +7,7 @@ import (
 // Snake represents the snake that the player controls.
 type Snake struct {
 	cellList   []snakeapp.Cell
-	CellSet    map[snakeapp.Cell]bool
+	cellSet    map[snakeapp.Cell]bool
 	direction  int
 	controller snakeapp.Controller
 }
@@ -15,12 +15,16 @@ type Snake struct {
 func New(boardSize int, c snakeapp.Controller) *Snake {
 	s := &Snake{
 		cellList:   []snakeapp.Cell{},
-		CellSet:    map[snakeapp.Cell]bool{},
+		cellSet:    map[snakeapp.Cell]bool{},
 		direction:  snakeapp.Up,
 		controller: c,
 	}
 	s.addHead(snakeapp.Cell{boardSize / 2, boardSize / 2})
 	return s
+}
+
+func (s *Snake) Cells() map[snakeapp.Cell]bool {
+	return s.cellSet
 }
 
 func (s *Snake) BodyCollision(c snakeapp.Cell) bool {
@@ -86,10 +90,10 @@ func (s *Snake) getNewHead(d int) snakeapp.Cell {
 func (s *Snake) removeTailTip() {
 	tip := s.cellList[len(s.cellList)-1]
 	s.cellList = s.cellList[0 : len(s.cellList)-1]
-	delete(s.CellSet, tip)
+	delete(s.cellSet, tip)
 }
 
 func (s *Snake) addHead(h snakeapp.Cell) {
 	s.cellList = append([]snakeapp.Cell{h}, s.cellList...)
-	s.CellSet[h] = true
+	s.cellSet[h] = true
 }

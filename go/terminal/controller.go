@@ -1,4 +1,4 @@
-package keyboard
+package terminal
 
 import (
 	"github.com/jpalmour/snake/go"
