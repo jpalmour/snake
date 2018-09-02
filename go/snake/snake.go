@@ -76,17 +76,18 @@ func (s *Snake) getDirection() int {
 }
 
 func (s *Snake) getNewHead(d int) snakeapp.Cell {
+	head := s.Head()
 	switch d {
 	case snakeapp.Up:
-		return snakeapp.Cell{s.Head().X, s.Head().Y - 1}
+		head.Y = head.Y - 1
 	case snakeapp.Down:
-		return snakeapp.Cell{s.Head().X, s.Head().Y + 1}
+		head.Y = head.Y + 1
 	case snakeapp.Left:
-		return snakeapp.Cell{s.Head().X - 1, s.Head().Y}
+		head.X = head.X - 1
 	case snakeapp.Right:
-		return snakeapp.Cell{s.Head().X + 1, s.Head().Y}
+		head.X = head.X + 1
 	}
-	return snakeapp.Cell{s.Head().X + 1, s.Head().Y}
+	return head
 }
 
 func (s *Snake) removeTailTip() {
