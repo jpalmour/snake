@@ -2,6 +2,7 @@ package browser
 
 import (
 	"fmt"
+	"syscall/js"
 
 	"github.com/jpalmour/snake/go"
 )
@@ -14,7 +15,6 @@ func NewDisplay() *Display {
 }
 
 func (d *Display) Paint(g *snakeapp.Game) {
-	clearGrid()
 	d.paintScoreboard(g)
 	d.paintGrid(g)
 }
@@ -38,13 +38,22 @@ func (d *Display) paintRow(r int, g *snakeapp.Game) {
 func (d *Display) paintCell(r, c int, g *snakeapp.Game) {
 	cu := snakeapp.Cell{r, c}
 	if g.Snake.Cells()[cu] {
-		//fmt.Print("@")
+		document := js.Global().Get("document")
+		grid := document.Call("getElementById", "grid")
+		snakeCell := document.Call("createElement", "div")
+		snakeCell.Get("style").Set("grid-column", js.ValueOf(c+1))
+		snakeCell.Get("style").Set("grid-row", js.ValueOf(r+1))
+		snakeCell.Get("style").Set("background-color", js.ValueOf("black"))
+		grid.Call("appendChild", snakeCell)
 	} else if cu == g.Food {
-		//fmt.Print("#")
+		document := js.Global().Get("document")
+		grid := document.Call("getElementById", "grid")
+		snakeCell := document.Call("createElement", "div")
+		snakeCell.Get("style").Set("grid-column", js.ValueOf(c+1))
+		snakeCell.Get("style").Set("grid-row", js.ValueOf(r+1))
+		snakeCell.Get("style").Set("background-color", js.ValueOf("red"))
+		grid.Call("appendChild", snakeCell)
 	} else {
 		//fmt.Print(" ")
 	}
-}
-
-func clearGrid() {
 }
