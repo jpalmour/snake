@@ -5,25 +5,54 @@
     grid-template-rows: repeat(30, 1fr);
     margin-left: auto;
     margin-right: auto;
-    background: green;
+    background: lightseagreen;
+    border-color: black;
+    border-width: 8px;
+    border-radius: 8px;
+    border: solid;
 }
 
 html,body { 
     height: 100%;
     margin: 0px;
     padding: 0px;
-
+    background: lightseagreen;
 }
 
 #scoreboard {
-    background: black;
-    color: white;
+    color: black;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+#scoreboard span {
+    font-family: Impact;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.cell {
+    background-color: black;
+    border-radius: 8px;
+}
+
+button {
+    font-family: Impact;
+    padding: 10px;
+    background-color: lightseagreen;
+    border-radius:4px;
+    font-size: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid;
 }
 
 #game { 
-    background: black;
     height: 100%;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
 }

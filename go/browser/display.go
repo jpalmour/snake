@@ -42,9 +42,8 @@ func paintFood(c snakeapp.Cell) {
 	food := document.Call("createElement", "div")
 	food.Get("style").Set("grid-column", js.ValueOf(c.X+1))
 	food.Get("style").Set("grid-row", js.ValueOf(c.Y+1))
-	food.Get("style").Set("background-color", js.ValueOf("red"))
+	food.Get("classList").Call("add", "cell")
 	grid.Call("appendChild", food)
-
 }
 
 func paintSnake(s snakeapp.Snake) {
@@ -54,7 +53,7 @@ func paintSnake(s snakeapp.Snake) {
 		snakeCell := document.Call("createElement", "div")
 		snakeCell.Get("style").Set("grid-column", js.ValueOf(c.X+1))
 		snakeCell.Get("style").Set("grid-row", js.ValueOf(c.Y+1))
-		snakeCell.Get("style").Set("background-color", js.ValueOf("black"))
+		snakeCell.Get("classList").Call("add", "cell")
 		grid.Call("appendChild", snakeCell)
 	}
 }
