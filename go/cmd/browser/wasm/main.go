@@ -10,6 +10,6 @@ func main() {
 	println("Starting Snake written in Go compiled to WebAssembly...")
 	c := browser.NewController()
 	d := browser.NewDisplay()
-	g := game.New(30, 500, c, d)
+	g := game.New(30, 200, c, d)
 	g.Play()
 }

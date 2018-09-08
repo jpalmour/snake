@@ -7,53 +7,54 @@ import (
 	"github.com/jpalmour/snake/go"
 )
 
-type Display struct {
-}
+type Display struct{}
 
 func NewDisplay() *Display {
 	return &Display{}
 }
 
 func (d *Display) Paint(g *snakeapp.Game) {
-	d.paintScoreboard(g)
-	d.paintGrid(g)
+	paintScoreboard(g)
+	clearGrid(g.Size)
+	paintSnake(g.Snake)
+	paintFood(g.Food)
 }
 
-func (d *Display) paintScoreboard(g *snakeapp.Game) {
+func clearGrid(s int) {
+	document := js.Global().Get("document")
+	// TODO: Does this create a memory leak? Learn what remove does with removed resources.
+	document.Call("getElementById", "grid").Call("remove")
+	game := document.Call("getElementById", "game")
+	grid := document.Call("createElement", "div")
+	grid.Set("id", "grid")
+	game.Call("appendChild", grid)
+	// TODO: set template columns/rows to s instead of relying on static css values
+}
+
+func paintScoreboard(g *snakeapp.Game) {
+	// TODO: add scoreboard to HTML
 	fmt.Printf("Snake\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.Score, g.Speed, g.Turns)
 }
 
-func (d *Display) paintGrid(g *snakeapp.Game) {
-	for r := 0; r < g.Size; r++ {
-		d.paintRow(r, g)
-	}
+func paintFood(c snakeapp.Cell) {
+	document := js.Global().Get("document")
+	grid := document.Call("getElementById", "grid")
+	food := document.Call("createElement", "div")
+	food.Get("style").Set("grid-column", js.ValueOf(c.X+1))
+	food.Get("style").Set("grid-row", js.ValueOf(c.Y+1))
+	food.Get("style").Set("background-color", js.ValueOf("red"))
+	grid.Call("appendChild", food)
+
 }
 
-func (d *Display) paintRow(r int, g *snakeapp.Game) {
-	for c := 0; c < g.Size; c++ {
-		d.paintCell(c, r, g)
-	}
-}
-
-func (d *Display) paintCell(r, c int, g *snakeapp.Game) {
-	cu := snakeapp.Cell{r, c}
-	if g.Snake.Cells()[cu] {
-		document := js.Global().Get("document")
+func paintSnake(s snakeapp.Snake) {
+	document := js.Global().Get("document")
+	for _, c := range s.CellList() {
 		grid := document.Call("getElementById", "grid")
 		snakeCell := document.Call("createElement", "div")
-		snakeCell.Get("style").Set("grid-column", js.ValueOf(c+1))
-		snakeCell.Get("style").Set("grid-row", js.ValueOf(r+1))
+		snakeCell.Get("style").Set("grid-column", js.ValueOf(c.X+1))
+		snakeCell.Get("style").Set("grid-row", js.ValueOf(c.Y+1))
 		snakeCell.Get("style").Set("background-color", js.ValueOf("black"))
 		grid.Call("appendChild", snakeCell)
-	} else if cu == g.Food {
-		document := js.Global().Get("document")
-		grid := document.Call("getElementById", "grid")
-		snakeCell := document.Call("createElement", "div")
-		snakeCell.Get("style").Set("grid-column", js.ValueOf(c+1))
-		snakeCell.Get("style").Set("grid-row", js.ValueOf(r+1))
-		snakeCell.Get("style").Set("background-color", js.ValueOf("red"))
-		grid.Call("appendChild", snakeCell)
-	} else {
-		//fmt.Print(" ")
 	}
 }

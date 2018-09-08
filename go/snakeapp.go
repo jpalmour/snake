@@ -26,7 +26,9 @@ type Snake interface {
 	HeadCollision() bool
 	Head() Cell
 	Move(Cell) bool
-	Cells() map[Cell]bool
+	// TODO: remove CellSet
+	CellSet() map[Cell]bool
+	CellList() []Cell
 }
 
 const (

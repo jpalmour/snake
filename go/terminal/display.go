@@ -34,7 +34,7 @@ func (d *Display) paintGrid(g *snakeapp.Game) {
 
 func (d *Display) paintCell(r, c int, g *snakeapp.Game) {
 	cu := snakeapp.Cell{r, c}
-	if g.Snake.Cells()[cu] {
+	if g.Snake.CellSet()[cu] {
 		fmt.Print("@")
 	} else if cu == g.Food {
 		fmt.Print("#")

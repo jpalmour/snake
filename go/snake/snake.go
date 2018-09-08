@@ -23,8 +23,12 @@ func New(boardSize int, c snakeapp.Controller) *Snake {
 	return s
 }
 
-func (s *Snake) Cells() map[snakeapp.Cell]bool {
+func (s *Snake) CellSet() map[snakeapp.Cell]bool {
 	return s.cellSet
+}
+
+func (s *Snake) CellList() []snakeapp.Cell {
+	return s.cellList
 }
 
 func (s *Snake) BodyCollision(c snakeapp.Cell) bool {
