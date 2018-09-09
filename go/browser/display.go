@@ -1,7 +1,6 @@
 package browser
 
 import (
-	"fmt"
 	"syscall/js"
 
 	"github.com/jpalmour/snake/go"
@@ -24,16 +23,19 @@ func clearGrid(s int) {
 	document := js.Global().Get("document")
 	// TODO: Does this create a memory leak? Learn what remove does with removed resources.
 	document.Call("getElementById", "grid").Call("remove")
-	game := document.Call("getElementById", "game")
+	scoreboard := document.Call("getElementById", "scoreboard")
 	grid := document.Call("createElement", "div")
 	grid.Set("id", "grid")
-	game.Call("appendChild", grid)
+	scoreboard.Call("after", grid)
 	// TODO: set template columns/rows to s instead of relying on static css values
 }
 
 func paintScoreboard(g *snakeapp.Game) {
-	// TODO: add scoreboard to HTML
-	fmt.Printf("Snake\t\tScore: %d\t\tSpeed: %d\t\tTurns: %d\n", g.Score, g.Speed, g.Turns)
+	document := js.Global().Get("document")
+	score := document.Call("getElementById", "score")
+	score.Set("innerText", g.Score)
+	turns := document.Call("getElementById", "turns")
+	turns.Set("innerText", g.Turns)
 }
 
 func paintFood(c snakeapp.Cell) {

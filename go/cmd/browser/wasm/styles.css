@@ -1,6 +1,28 @@
+html{
+    min-height: 100%;
+    position: relative;
+    background: lightseagreen;
+}
+body{
+    height:100%;
+    margin: 0px;
+}
+
+#game{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:-1; /* Remove this line if it's not going to be a background! */
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #grid {
+    height: 75%;
     display: grid;
-    height: 100%;
     grid-template-columns: repeat(30, 1fr);
     grid-template-rows: repeat(30, 1fr);
     margin-left: auto;
@@ -12,25 +34,23 @@
     border: solid;
 }
 
-html,body { 
-    height: 100%;
-    margin: 0px;
-    padding: 0px;
-    background: lightseagreen;
-}
-
 #scoreboard {
+    height: 12.5%;
     color: black;
     margin-left: auto;
     margin-right: auto;
     display: flex;
     justify-content: space-between;
-    padding: 10px;
+    align-items: center;
+}
+
+#footer {
+    height: 12.5%;
 }
 
 #scoreboard span {
     font-family: Impact;
-    padding: 10px;
+    margin: 10px;
     font-size: 20px;
 }
 
@@ -41,18 +61,10 @@ html,body {
 
 button {
     font-family: Impact;
-    padding: 10px;
     background-color: lightseagreen;
     border-radius:4px;
     font-size: 20px;
     text-decoration: none;
     cursor: pointer;
     border: solid;
-}
-
-#game { 
-    height: 100%;
-    width: 60%;
-    margin-left: auto;
-    margin-right: auto;
 }
