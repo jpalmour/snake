@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+Copyright 2018 The Go Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>Snake</title>
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<script src="wasm_exec.js"></script>
+	<script>
+		if (!WebAssembly.instantiateStreaming) { // polyfill
+			WebAssembly.instantiateStreaming = async (resp, importObject) => {
+				const source = await (await resp).arrayBuffer();
+				return await WebAssembly.instantiate(source, importObject);
+			};
+		}
+
+		const go = new Go();
+		let mod, inst;
+		WebAssembly.instantiateStreaming(fetch("snake.wasm"), go.importObject).then((result) => {
+			mod = result.module;
+			inst = result.instance;
+			document.getElementById("runButton").disabled = false;
+		});
+
+		async function run() {
+			console.clear();
+			await go.run(inst);
+			inst = await WebAssembly.instantiate(mod, go.importObject); // reset instance
+		}
+	</script>
+
+	<div id="game">
+		<div id="scoreboard">
+			<div id="score"></div>
+			<button onClick="run();" id="runButton" disabled>Play</button>
+			<div id="turns"></div>
+		</div>
+		<div id="grid"></div>
+		<div id="footer"></div>
+	</div>
+</body>
+
+</html>

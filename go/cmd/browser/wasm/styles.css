@@ -1,0 +1,71 @@
+html{
+    min-height: 100%;
+    position: relative;
+    background: lightseagreen;
+}
+body{
+    height:100%;
+    margin: 0px;
+}
+
+#game{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    width: 40%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#grid {
+    height: 75%;
+    display: grid;
+    grid-template-columns: repeat(30, 1fr);
+    grid-template-rows: repeat(30, 1fr);
+    margin-left: auto;
+    margin-right: auto;
+    background: lightseagreen;
+    border-color: black;
+    border-width: 8px;
+    border-radius: 8px;
+    border: solid;
+}
+
+#scoreboard {
+    height: 12.5%;
+    color: black;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#footer {
+    height: 12.5%;
+}
+
+#scoreboard div {
+    font-family: Impact;
+    margin: 10px;
+    font-size: 20px;
+    text-align: center;
+    width: 40px;
+}
+
+.cell {
+    background-color: black;
+    border-radius: 4px;
+}
+
+button {
+    font-family: Impact;
+    background-color: lightseagreen;
+    border-radius:4px;
+    font-size: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid;
+}
